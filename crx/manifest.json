@@ -1,0 +1,17 @@
+{
+  "name": "Chrome WebApp Facebook Graph API Usage Example",
+  "description": "Example implementation of Facebook Graph API on Chrome Installable Web Apps",
+  "version": "1",
+  "app": {
+    "launch": {
+      "local_path": "index.html"
+    }
+  },
+  "icons": {
+    "16": "19.png",
+    "128": "128.png"
+  },
+  "permissions": [
+    "https://graph.facebook.com/"
+  ]
+}

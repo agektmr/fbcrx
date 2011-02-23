@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Facebook Authentication done!</title>
+    <style>
+      body {margin:0; padding:0;}
+      iframe {margin:0; padding:0; border:0;}
+    </style>
+    <script>
+      /**
+       * README: replace "ext_id" with your actual extension's id
+       */
+      var ext_id = 'deeplbnohlaofbdjpdanhaelakohddbf';
+      var ext_url = 'chrome-extension://'+ext_id;
+      window.onload = function() {
+        var iframe = document.createElement('iframe');
+        iframe.src = ext_url+'/receiver.html';
+        document.body.appendChild(iframe);
+        window.onmessage = function(e) {
+          if (e.origin.indexOf(ext_url) == -1) {
+            document.write('invalid request');
+            return;
+          }
+          switch (e.data) {
+          case 'redirect' :
+            location.href = ext_url+'/index.html';
+            break;
+          case 'request' :
+            if (document.URL.match(/#/)) {
+              var hash = document.URL.replace(/^.*?#(.*)/, "$1");
+              iframe.contentWindow.postMessage(hash, iframe.src); 
+            } else {
+              document.write('Facebook Authentication Failed');
+            }
+            break;
+          }
+        }
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

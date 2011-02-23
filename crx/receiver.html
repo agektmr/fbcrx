@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Facebook Contacts Manager Callback</title>
+    <script>
+      /*
+       * README: replace "domain" and "callback_url" with your callback URL
+       * and put "callback.html" on server and make sure it is accessible with that URL.
+       */
+      var domain = 'http://devlab.agektmr.com';
+      var callback_url = domain+'/FBGraph/callback.html';
+      window.onload = function() {
+        if (parent.postMessage) {
+          window.onmessage = function(e) {
+            if (e.origin == domain) {
+              localStorage.token = e.data;
+              parent.postMessage('redirect', callback_url);
+            } else {
+              alert('invalid authorization attempt');
+            }
+          };
+          parent.postMessage('request', callback_url);
+        }
+      }
+    </script>
+  </head>
+</html>

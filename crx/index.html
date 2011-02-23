@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chrome WebApp Facebook Graph API Usage Example</title>
+    <script src="fbcrx.js"></script>
+    <script>
+      window.onload = function() {
+        if (localStorage.token && localStorage.token != '') {
+          fbcrx.setToken(localStorage.token);
+          var login = document.getElementById('login');
+          login.innerHTML = 'Log out from Facebook';
+          login.onclick = function() {
+            delete localStorage.token;
+            location.reload();
+          };
+        } else {
+          document.getElementById('login').onclick = function() {
+            var config = {
+              api_key: '190827674281599',
+              callback_url: 'http://devlab.agektmr.com/FBGraph/callback.html',
+              scope: [
+                'email',
+                'read_stream'
+              ]
+            };
+            fbcrx.login(config);
+          };
+        }
+        document.querySelector('#submit').onclick = function() {
+          var path = document.querySelector('#path').value;
+          fbcrx.api(path, function(result) {
+            var str = JSON.stringify(result)
+                      .replace(/\[/g, "[<br/>")
+                      .replace(/\]/g, "<br/>]")
+                      .replace(/{/g, "{<br/>")
+                      .replace(/}/g, "<br/>}")
+                      .replace(/,/g, ",<br/>");
+            document.querySelector('#container').innerHTML = str;
+          });
+        };
+      };
+    </script>
+    <style>
+      body {margin:10px; padding:0;}
+      h1 {display:inline; font-size:1.5em;}
+      #owner_info {float:right;}
+      #login {text-decoration:underline; color:blue; cursor:pointer;}
+      header {padding:10px;}
+      nav {border-top:1px solid #999; border-bottom:1px solid #999; padding:10px;}
+      #container {font-family:monospace; font-size:0.85em; padding:10px;}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Chrome WebApp Facebook Graph API Usage Example</h1>
+      <div id="owner_info">
+        <span id="login">Login with Facebook</span>
+      </div>
+    </header>
+    <nav>
+      <input type="text" id="path" value="/me" />
+      <input type="button" id="submit" value="query" />
+      <p><a href="http://developers.facebook.com/docs/reference/api/" target="_blank">Facebook Graph API Reference</a></p>
+    </nav>
+    <section id="container">
+    </section>
+    <footer>
+    </footer>
+  </body>
+</html>
