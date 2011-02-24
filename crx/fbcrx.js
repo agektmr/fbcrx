@@ -102,7 +102,7 @@ var fbcrx = function() {
     setToken: function(_token) {
       token = query_parse(_token);
     },
-    api: function(path, callback, params, method) {
+    api: function(path, callback, error_callback, params, method) {
       if (params) {
         for (var key in token) {
           params[key] = token[key];
@@ -110,9 +110,7 @@ var fbcrx = function() {
       } else {
         params = token;
       }
-      request(graph_domain+path, callback, function() {
-        fbcrx.login();
-      }, method || httpMethod.GET, params);
+      request(graph_domain+path, callback, error_callback, method || httpMethod.GET, params);
     }
   };
 }();

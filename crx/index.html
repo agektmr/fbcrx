@@ -17,6 +17,9 @@
         } else {
           document.getElementById('login').onclick = function() {
             var config = {
+              /**
+               * README: change "api_key" and "callback_url" accordingly from Facebook App settings
+               */
               api_key: '190827674281599',
               callback_url: 'http://devlab.agektmr.com/FBGraph/callback.html',
               scope: [
@@ -30,13 +33,9 @@
         document.querySelector('#submit').onclick = function() {
           var path = document.querySelector('#path').value;
           fbcrx.api(path, function(result) {
-            var str = JSON.stringify(result)
-                      .replace(/\[/g, "[<br/>")
-                      .replace(/\]/g, "<br/>]")
-                      .replace(/{/g, "{<br/>")
-                      .replace(/}/g, "<br/>}")
-                      .replace(/,/g, ",<br/>");
-            document.querySelector('#container').innerHTML = str;
+            document.querySelector('#container').innerHTML = '<pre>'+JSON.stringify(result, null, 4)+'</pre>';
+          }, function(result) {
+            alert('Authentication failed. Please login to Facebook.');
           });
         };
       };
@@ -48,7 +47,7 @@
       #login {text-decoration:underline; color:blue; cursor:pointer;}
       header {padding:10px;}
       nav {border-top:1px solid #999; border-bottom:1px solid #999; padding:10px;}
-      #container {font-family:monospace; font-size:0.85em; padding:10px;}
+      #container {font-size:0.85em; padding:10px;}
     </style>
   </head>
   <body>
