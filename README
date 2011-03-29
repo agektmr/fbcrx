@@ -1,0 +1,23 @@
+This is an example implementation utilizing Facebook Graph API implemented on Chrome WebApp.
+Before you try this out, you need to change a few lines of code as well as setting up a Facebook App.
+You can create Facebook App from following page.
+http://developers.facebook.com/setup
+
+============
+Prerequisite
+============
+You must have following:
+- Chrome Browser
+- Facebook Account
+- Facebook App
+- Web server you can place "server/callback.html"
+
+====================
+Edit following files
+====================
+1. crx/index.html
+Around line 23, change "api_key" and "callback_url" params.
+"api_key" should be provided by Facebook if you own an Facebook App.
+"callback_url" must be the same url you have set on your Facebook App. Also, you have to be able to place server/callback.html on exact same url.
+
+2. server/callback.html

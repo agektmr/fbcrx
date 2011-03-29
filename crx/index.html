@@ -2,40 +2,142 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Chrome WebApp Facebook Graph API Usage Example</title>
-    <script src="fbcrx.js"></script>
+    <title>Chrome WebApp Google OAuth2 Usage Example</title>
+    <script src="googleoauth2crx.js"></script>
     <script>
+      var qs = function(query) {
+        return document.querySelector(query);
+      };
+      var apis = [
+        {name: 'Analytics',
+        auth: 'https://www.google.com/analytics/feeds/',
+        api: 'https://www.google.com/analytics/feeds/'},
+        {name: 'Google Base',
+        auth: 'https://www.google.com/base/feeds/',
+        api: 'https://www.google.com/base/feeds/'},
+        {name: 'Google Buzz',
+        auth: 'https://www.googleapis.com/auth/buzz',
+        api: 'https://www.googleapis.com/buzz/v1/'},
+        {name: 'Book Search',
+        auth: 'https://www.google.com/books/feeds/',
+        api: 'https://www.google.com/books/feeds/'},
+        {name: 'Blogger',
+        auth: 'https://www.blogger.com/feeds/',
+        api: 'https://www.blogger.com/feeds/'},
+        {name: 'Calendar',
+        auth: 'https://www.google.com/calendar/feeds/',
+        api: 'https://www.google.com/calendar/feeds/'},
+        {name: 'Contacts',
+        auth: 'https://www.google.com/m8/feeds/',
+        api: 'https://www.google.com/m8/feeds/'},
+//      {name: 'Chrome Web Store',
+//      auth: 'https://www.googleapis.com/auth/chromewebstore.readonly',
+//      api: 'https://www.googleapis.com/auth/chromewebstore.readonly'},
+        {name: 'Documents List',
+        auth: 'https://docs.google.com/feeds/',
+        api: 'https://docs.google.com/feeds/'},
+        {name: 'Finance',
+        auth: 'https://finance.google.com/finance/feeds/',
+        api: 'https://finance.google.com/finance/feeds/'},
+        {name: 'GMail',
+        auth: 'https://mail.google.com/mail/feed/atom',
+        api: 'https://mail.google.com/mail/feed/atom'},
+        {name: 'Health',
+        auth: 'https://www.google.com/health/feeds/',
+        api: 'https://www.google.com/health/feeds/'},
+        {name: 'H9',
+        auth: 'https://www.google.com/h9/feeds/',
+        api: 'https://www.google.com/h9/feeds/'},
+        {name: 'Maps',
+        auth: 'https://maps.google.com/maps/feeds/',
+        api: 'https://maps.google.com/maps/feeds/'},
+        {name: 'Moderator',
+        auth: 'https://www.googleapis.com/auth/moderator',
+        api: 'https://www.googleapis.com/auth/moderator'},
+        {name: 'OpenSocial',
+        auth: 'https://www-opensocial.googleusercontent.com/api/people/',
+        api: 'https://www-opensocial.googleusercontent.com/api/people/'},
+        {name: 'orkut',
+        auth: 'https://orkut.gmodules.com/social/rest',
+        api: 'https://orkut.gmodules.com/social/rest'},
+        {name: 'Picasa Web',
+        auth: 'https://picasaweb.google.com/data/',
+        api: 'https://picasaweb.google.com/data/'},
+        {name: 'Sidewiki',
+        auth: 'https://www.google.com/sidewiki/feeds/',
+        api: 'https://www.google.com/sidewiki/feeds/'},
+        {name: 'Sites',
+        auth: 'https://sites.google.com/feeds/',
+        api: 'https://sites.google.com/feeds/'},
+        {name: 'Spreadsheets',
+        auth: 'https://spreadsheets.google.com/feeds/',
+        api: 'https://spreadsheets.google.com/feeds/'},
+        {name: 'URL Shortener',
+        auth: 'https://www.googleapis.com/auth/urlshortener',
+        api: 'https://www.googleapis.com/auth/urlshortener'},
+        {name: 'Wave',
+        auth: 'http://wave.googleusercontent.com/api/rpc',
+        api: 'http://wave.googleusercontent.com/api/rpc'},
+        {name: 'Webmaster Tools',
+        auth: 'https://www.google.com/webmasters/tools/feeds/',
+        api: 'https://www.google.com/webmasters/tools/feeds/'},
+        {name: 'YouTube', 
+        auth: 'https://gdata.youtube.com',
+        api: 'https://gdata.youtube.com'}
+      ];
       window.onload = function() {
         if (localStorage.token && localStorage.token != '') {
-          fbcrx.setToken(localStorage.token);
-          var login = document.getElementById('login');
-          login.innerHTML = 'Log out from Facebook';
+          apis.forEach(function(api) {
+            var checked = '';
+            if (localStorage.scopes && localStorage.scopes.indexOf(api.auth) != -1) {
+              var option = document.createElement('option');
+              option.value = api.api;
+              option.innerHTML = '['+api.name+'] '+api.api;
+              qs('#api_selector').appendChild(option);
+            }
+          });
+          qs('#api_accessor').style.display = 'block';
+          googleoauth2crx.setToken(JSON.parse(localStorage.token));
+          var login = qs('#login');
+          login.innerHTML = 'Log out from Google';
           login.onclick = function() {
             delete localStorage.token;
             location.reload();
           };
         } else {
-          document.getElementById('login').onclick = function() {
+          apis.forEach(function(api) {
+            var checked = '';
+            if (localStorage.scopes && localStorage.scopes.indexOf(api.auth) !== -1) {
+              checked = 'checked';
+            }
+            var li = document.createElement('li');
+            li.innerHTML = '<input type="checkbox" name="scope" value="'+api.auth+'" '+checked+'>'+api.name;
+            qs('#scopes').appendChild(li);
+          });
+          qs('#scope_selector').style.display = 'block';
+          qs('#login').onclick = function() {
+            var scope = [];
+            var inputs = document.querySelectorAll('input[name=scope]');
+            for (var i = 0; i < inputs.length; i++) {
+              if (inputs[i].checked) scope.push(inputs[i].value);
+            }
+            localStorage.scopes = scope;
             var config = {
-              /**
-               * README: change "api_key" and "callback_url" accordingly from Facebook App settings
-               */
-              api_key: '190827674281599',
-              callback_url: 'http://devlab.agektmr.com/FBGraph/callback.html',
-              scope: [
-                'email',
-                'read_stream'
-              ]
+              api_key: '281210626133.apps.googleusercontent.com',
+              callback_url: 'http://devlab.agektmr.com/GoogleOAuth2/callback.html',
+              scope: scope
             };
-            fbcrx.login(config);
+            googleoauth2crx.login(config);
           };
         }
-        document.querySelector('#submit').onclick = function() {
-          var path = document.querySelector('#path').value;
-          fbcrx.api(path, function(result) {
-            document.querySelector('#container').innerHTML = '<pre>'+JSON.stringify(result, null, 4)+'</pre>';
+        qs('#submit').onclick = function() {
+          var api = qs('#api_selector').value;
+          var path = qs('#path').value;
+          googleoauth2crx.api(api+path, function(result) {
+            qs('#container').innerHTML = '<pre>'+JSON.stringify(result, null, 4)+'</pre>';
           }, function(result) {
-            alert('Authentication failed. Please login to Facebook.');
+            console.error(result);
+            alert('Error.');
           });
         };
       };
@@ -52,16 +154,22 @@
   </head>
   <body>
     <header>
-      <h1>Chrome WebApp Facebook Graph API Usage Example</h1>
+      <h1>Chrome WebApp Google OAuth2 Usage Example</h1>
       <div id="owner_info">
-        <span id="login">Login with Facebook</span>
+        <span id="login">Login with Google</span>
       </div>
     </header>
-    <nav>
-      <input type="text" id="path" value="/me" />
+    <nav id="api_accessor" style="display:none;">
+      <select id="api_selector">
+      </select>
+      <input type="text" id="path" value="" />
       <input type="button" id="submit" value="query" />
-      <p><a href="http://developers.facebook.com/docs/reference/api/" target="_blank">Facebook Graph API Reference</a></p>
+      <p><a href="http://code.google.com/apis/accounts/docs/OAuth2.html" target="_blank">Google OAuth2 API Reference</a></p>
     </nav>
+    <section id="scope_selector" style="display:none;">
+      <p>Choose APIs you want to authorize and login.</p>
+      <ul id="scopes"></ul>
+    </section>
     <section id="container">
     </section>
     <footer>

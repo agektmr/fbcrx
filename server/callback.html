@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Facebook Authentication done!</title>
+    <title>Google OAuth2 Authentication done!</title>
     <style>
       body {margin:0; padding:0;}
       iframe {margin:0; padding:0; border:0;}
@@ -11,8 +11,17 @@
       /**
        * README: replace "ext_id" with your actual extension's id
        */
-      var ext_id = 'deeplbnohlaofbdjpdanhaelakohddbf';
+      var ext_id = 'idneeldnahcdjfnlanhkknhfmhibopbg';
       var ext_url = 'chrome-extension://'+ext_id;
+      var query_parse = function(query) {
+        var obj = {};
+        query.split('&').forEach(function(val) {
+          var tmp = val.split('=');
+          if (tmp.length != 2) return;
+          obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
+        });
+        return obj;
+      };
       window.onload = function() {
         var iframe = document.createElement('iframe');
         iframe.src = ext_url+'/receiver.html';
@@ -29,9 +38,9 @@
           case 'request' :
             if (document.URL.match(/#/)) {
               var hash = document.URL.replace(/^.*?#(.*)/, "$1");
-              iframe.contentWindow.postMessage(hash, iframe.src); 
+              iframe.contentWindow.postMessage(JSON.stringify(query_parse(hash)), iframe.src); 
             } else {
-              document.write('Facebook Authentication Failed');
+              document.write('Google Authentication Failed');
             }
             break;
           }
